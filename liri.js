@@ -34,25 +34,29 @@ else if(command === 'spotify-this-song'){
   let nodeArgs = process.argv
   let searchTopic = '';
   for (let i = 3; i < nodeArgs.length; i++) {
-    // Build a string with the search letters, joined by '-'
+    // Build a string with the search letters, joined by ' '
     searchTopic += ' ' + nodeArgs[i];
-    //Fee that tring into the
-    console.log(searchTopic) 
+    // console.log(searchTopic) 
   }
   searchTopic.trim();
-  spotify.search({ type: 'track', query: searchTopic}, function(err, data) {
+  spotify.search({ type: 'track', query: searchTopic, limit: 5}, function(err, data) {
     if (!err) {
-      console.log(data.tracks.items[0].artists[0]); 
+      // let spotData = data;
+
+      //   console.log(spotData.tracks.items[i].name);
+      //   console.log(spotData.tracks.items[i].preview_url);
+
+      console.log('\nYou entered: ' + data.tracks.items[0].name + '\nThat sounds like a cool song!'); 
+      console.log('\nThe spotify search found a song by: ' + data.tracks.items[0].artists[3]);
+      console.log('Here\'s a preview of the top search result! \n' + data.tracks.items[0].preview_url);
     }else{
       return console.log('Error occurred: ' + err);
     }
-  });   
-
+  });
+}
 // }else if(command === 'movie-this'){
 //   run OMDB api;
 // }
 // else if(command = 'do-what-it-says'){
   
 // }
-
-}
