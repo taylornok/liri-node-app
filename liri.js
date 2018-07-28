@@ -30,7 +30,7 @@ const greetUser = () => {
 }
 
 //Only give the directions if the user has not entered any arguements - alt to null message
-if (!command){
+if (!command) {
   greetUser();
 }
 
@@ -39,17 +39,17 @@ if (command === 'my-tweets') {
   const params = {
     screen_name: 'purpleheffalum1'
   };
-  
+
   twitter.get('statuses/user_timeline', params, function (error, tweets, response) {
     if (!error) {
       for (let i = 0; i < tweets.length; i++) {
-        console.log('\n' + i + '-' + tweets[i].text + '\n^Created at: '   + tweets[i].created_at + '\n');
+        console.log('\n' + i + '-' + tweets[i].text + '\n^Created at: ' + tweets[i].created_at + '\n');
       }
     } else {
       console.log('There\'s been an error')
     }
   });
-  
+
 }
 
 
@@ -58,63 +58,75 @@ else if (command === 'spotify-this-song') {
   let nodeArgs = process.argv
   let searchTopic = '';
 
-  if (searchTopic === ''){
+
+  for (let i = 3; i < nodeArgs.length; i++) {
+
+    // Build a string with the search letters, joined by ' '
+    searchTopic += ' ' + nodeArgs[i];
+
+  }
+  searchTopic.trim();
+  if (searchTopic === '') {
     searchTopic = 'The Sign Ace of Base';
   }
 
-  for (let i = 3; i < nodeArgs.length; i++) {
-    
-    // Build a string with the search letters, joined by ' '
-    searchTopic += '' + nodeArgs[i];
-    //Create the conditional to display info for default song if there are no arguements after the command
-  }
-  searchTopic.trim();
   spotify.search({
-    type: 'track',
-    query: searchTopic,
-    limit: 5
-  }, function (err, data) {
-    if (!err) {
-      let artist = data.tracks.items[0].artists[0].name;
-      let song = data.tracks.items[0].name;
-      let preview = data.tracks.items[0].preview_url;
-      let album = data.tracks.items[0].album.name;
+      type: 'track',
+      query: searchTopic,
+      limit: 5
+    }, function (err, data) {
+      if (!err) {
+        if(data.tracks.items.length > 1){
+          // console.log(data)
+          let artist = data.tracks.items[0].artists[0].name
+          // console.log(artist);
+  
+          let song = data.tracks.items[0].name;
+          // console.log(song)
+          let preview = data.tracks.items[0].preview_url;
+          // console.log(preview)
+          let album = data.tracks.items[0].album.name;
+          // console.log(album)
+          console.log('\nYou entered: ' + song + '.' + '\nThat sounds like a cool song!' + '\nThe spotify search found a song by: ' + artist + '.\n' + 'It comes from the album: ' + album + '\nHere\'s a preview of the top search result! \n' + preview)
 
-      console.log(album)
-      
-    
-      console.log('\nYou entered: ' + song + '.' + '\nThat sounds like a cool song!' + '\nThe spotify search found a song by: ' + artist + '.\n' + 'It comes from the album: ' + album + '\nHere\'s a preview of the top search result! \n' + preview)
+        }else{
+          console.log('Sorry, I could\'nt find that one, try another song')
+        }
 
-    } else {
-      return console.log('Error occurred: ' + err);
+
+
+
+
+      }
     }
-  });
+
+  )
 }
+
+
 //OMDB, 'movie-this' access
-else if(command === 'movie-this'){
-  omdb.search(searchTopic, function(err, movies) {
-    if(!err) {
+else if (command === 'movie-this') {
+  omdb.search(searchTopic, function (err, movies) {
+    if (!err) {
       let nodeArgs = process.argv
       let searchTopic = '';
-    
+
       for (let i = 3; i < nodeArgs.length; i++) {
-        
+
         // Build a string with the search letters, joined by ' ', will be fed into search parameters
         searchTopic += ' ' + nodeArgs[i];
 
 
       }
-    }
-    else {
+    } else {
       return console.error(err);
-  }  
-  
+    }
 
-  }
-)};
+
+  })
+};
 
 
 
 
 // else if(command = 'do-what-it-says'){
-
