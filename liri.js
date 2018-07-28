@@ -57,10 +57,15 @@ if (command === 'my-tweets') {
 else if (command === 'spotify-this-song') {
   let nodeArgs = process.argv
   let searchTopic = '';
+
   for (let i = 3; i < nodeArgs.length; i++) {
+    
     // Build a string with the search letters, joined by ' '
     searchTopic += ' ' + nodeArgs[i];
-    // console.log(searchTopic) 
+    //Create the conditional to display info for default song if there are no arguements after the command
+    if (searchTopic === ' '){
+      searchTopic = 'The Sign Ace of Base';
+    }
   }
   searchTopic.trim();
   spotify.search({
