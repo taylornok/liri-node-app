@@ -6,7 +6,8 @@ const keys = require('./keys');
 const Spotify = require('node-spotify-api');
 const Twitter = require('twitter');
 const Omdb = require('omdb');
-
+const FS = require('fs')
+const request = require('request')
 //To access key information
 let spotify = new Spotify(keys.spotify);
 let twitter = new Twitter(keys.twitter);
@@ -28,6 +29,11 @@ const greetUser = () => {
     'Let\'s get started...'
   )
 }
+
+request('http://www.omdbapi.com/?t=harry+potter&apikey=trilogy', function (error, response, body) {
+  console.log(body)
+})
+
 
 //Only give the directions if the user has not entered any arguements - alt to null message
 if (!command) {
@@ -92,41 +98,35 @@ else if (command === 'spotify-this-song') {
         }else{
           console.log('Sorry, I could\'nt find that one, try another song')
         }
-
-
-
-
-
       }
     }
 
   )
 }
 
-
-//OMDB, 'movie-this' access
 else if (command === 'movie-this') {
-  omdb.search(searchTopic, function (err, movies) {
-    if (!err) {
-      let nodeArgs = process.argv
-      let searchTopic = '';
+  let nodeArgs = process.argv
+  let searchTopic = '';
 
-      for (let i = 3; i < nodeArgs.length; i++) {
+  for (let i = 3; i < nodeArgs.length; i++) {
+    // Build a string with the search letters, joined by ' ', will be fed into search parameters
+    searchTopic += ' ' + nodeArgs[i];
+  }
+  console.log(searchTopic)
 
-        // Build a string with the search letters, joined by ' ', will be fed into search parameters
-        searchTopic += ' ' + nodeArgs[i];
-
-
+    Omdb.get('tt0387564', function(err, movies) {
+      if(err) {
+          return console.error(err);
       }
-    } else {
-      return console.error(err);
-    }
+      console.log(movies);
+      // if(movies.length < 1) {
+      //     return console.log('No movies were found!');
+      // }
+    
+      // movies.forEach(function(movie) {
+      //     console.log('%s (%d)', movie.title, movie.year);
+      // });
+    
+    console.log(searchTopic)
+  })}
 
-
-  })
-};
-
-
-
-
-// else if(command = 'do-what-it-says'){
