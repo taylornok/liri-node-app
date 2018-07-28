@@ -58,14 +58,15 @@ else if (command === 'spotify-this-song') {
   let nodeArgs = process.argv
   let searchTopic = '';
 
+  if (searchTopic === ''){
+    searchTopic = 'The Sign Ace of Base';
+  }
+
   for (let i = 3; i < nodeArgs.length; i++) {
     
     // Build a string with the search letters, joined by ' '
-    searchTopic += ' ' + nodeArgs[i];
+    searchTopic += '' + nodeArgs[i];
     //Create the conditional to display info for default song if there are no arguements after the command
-    if (searchTopic === ' '){
-      searchTopic = 'The Sign Ace of Base';
-    }
   }
   searchTopic.trim();
   spotify.search({
@@ -91,13 +92,29 @@ else if (command === 'spotify-this-song') {
 }
 //OMDB, 'movie-this' access
 else if(command === 'movie-this'){
+  omdb.search(searchTopic, function(err, movies) {
+    if(!err) {
+      let nodeArgs = process.argv
+      let searchTopic = '';
+    
+      for (let i = 3; i < nodeArgs.length; i++) {
+        
+        // Build a string with the search letters, joined by ' ', will be fed into search parameters
+        searchTopic += ' ' + nodeArgs[i];
 
-}
 
+      }
+    }
+    else {
+      return console.error(err);
+  }  
+  
+
+  }
+)};
 
 
 
 
 // else if(command = 'do-what-it-says'){
 
-// }
