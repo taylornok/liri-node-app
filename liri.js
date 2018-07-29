@@ -21,18 +21,15 @@ const greetUser = () => {
   console.log(
     'Hello, i\'m LIRI!\n',
     'You can give me the following commands, and I\'ll return data to you! \n',
-    'Make sure to type in *node liri.js* before each commande to make it work \n',
+    'Make sure to type in *node liri.js* before each command to make it work \n',
     'You can type *my-tweets* to see 20 of my most recent tweets\n',
     'Type *spotify-this-song* followed by the artist and name of a song to find information on it! \n',
     'Type *movie-this* followed by the name of a movie to find information on it! \n',
-    'Type *do-what-it-says*, and I\'ll display data from the random.txt file!\n',
+    'Type *do-what-it-says*, and I\'ll do what the random.txt file tells me to!\n',
     'Let\'s get started...'
   )
 }
 
-request('http://www.omdbapi.com/?t=harry+potter&apikey=trilogy', function (error, response, body) {
-  console.log(body)
-})
 
 
 //Only give the directions if the user has not entered any arguements - alt to null message
@@ -82,11 +79,11 @@ else if (command === 'spotify-this-song') {
       limit: 5
     }, function (err, data) {
       if (!err) {
-        if(data.tracks.items.length > 1){
+        if (data.tracks.items.length > 1) {
           // console.log(data)
           let artist = data.tracks.items[0].artists[0].name
           // console.log(artist);
-  
+
           let song = data.tracks.items[0].name;
           // console.log(song)
           let preview = data.tracks.items[0].preview_url;
@@ -95,38 +92,81 @@ else if (command === 'spotify-this-song') {
           // console.log(album)
           console.log('\nYou entered: ' + song + '.' + '\nThat sounds like a cool song!' + '\nThe spotify search found a song by: ' + artist + '.\n' + 'It comes from the album: ' + album + '\nHere\'s a preview of the top search result! \n' + preview)
 
-        }else{
+        } else {
           console.log('Sorry, I could\'nt find that one, try another song')
         }
       }
     }
 
   )
-}
-
-else if (command === 'movie-this') {
+} else if (command === 'movie-this') {
   let nodeArgs = process.argv
   let searchTopic = '';
 
   for (let i = 3; i < nodeArgs.length; i++) {
     // Build a string with the search letters, joined by ' ', will be fed into search parameters
-    searchTopic += ' ' + nodeArgs[i];
+    searchTopic += '+' + nodeArgs[i];
   }
+  searchTopic.trim();
   console.log(searchTopic)
+  request('http://www.omdbapi.com/?t=' + searchTopic + '&apikey=trilogy', function (err, response, body) {
+    if (!err) {
 
-    Omdb.get('tt0387564', function(err, movies) {
-      if(err) {
-          return console.error(err);
-      }
-      console.log(movies);
-      // if(movies.length < 1) {
-      //     return console.log('No movies were found!');
-      // }
-    
-      // movies.forEach(function(movie) {
-      //     console.log('%s (%d)', movie.title, movie.year);
-      // });
-    
-    console.log(searchTopic)
-  })}
+      let jsonData = JSON.parse(body);
+      console.log(jsonData.Ratings[1])
+      console.log(
+        '\nTitle: ' + jsonData.Title,
+        '\nRelease Year: ' + jsonData.Year,
+        '\nIMDB Rating: ' + jsonData.Ratings[0].Value,
+        '\nRotten Tomatoes Rating: ' + jsonData.Ratings[1].Value,
+        '\nCountry: ' + jsonData.Country,
+        '\nLanguage: ' + jsonData.Language,
+        '\nPlot: ' + jsonData.Plot,
+        '\nActors: ' + jsonData.Actors
+      )
 
+    }
+    if (err) {
+      console.log(err);
+    }
+  })
+
+} else if (command === 'do-what-it-says') {
+  FS.readFile('random.txt', 'utf8', function (error, data) {
+    if (error) {
+      return console.log(error);
+
+    }else{
+  
+      let dataArray = data.split(',');
+      let dataSong = (dataArray[1]);
+      
+      spotify.search({
+        type: 'track',
+        query: dataSong,
+        limit: 5
+      }, function (err, repsonse) {
+        if (!err) {
+          console.log('inside spotify function ', dataSong)
+          if (response.tracks.items.length > 1) {
+            console.log(response)
+            let artist = response.tracks.items[0].artists[0].name
+            console.log(artist);
+  
+            let song = response.tracks.items[0].name;
+            console.log(song)
+            let preview = response.tracks.items[0].preview_url;
+            console.log(preview)
+            let album = response.tracks.items[0].album.name;
+            console.log(album)
+            console.log('\nYou entered: ' + song + '.' + '\nThat sounds like a cool song!' + '\nThe spotify search found a song by: ' + artist + '.\n' + 'It comes from the album: ' + album + '\nHere\'s a preview of the top search result! \n' + preview)
+  
+          } else {
+            console.log('Sorry, I could\'nt find that one, try another song')
+          }
+
+    }
+  })
+    }
+  })
+}
