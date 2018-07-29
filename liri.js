@@ -108,12 +108,12 @@ else if (command === 'spotify-this-song') {
     searchTopic += '+' + nodeArgs[i];
   }
   searchTopic.trim();
-  console.log(searchTopic)
+
   request('http://www.omdbapi.com/?t=' + searchTopic + '&apikey=trilogy', function (err, response, body) {
     if (!err) {
 
       let jsonData = JSON.parse(body);
-      console.log(jsonData.Ratings[1])
+
       console.log(
         '\nTitle: ' + jsonData.Title,
         '\nRelease Year: ' + jsonData.Year,
